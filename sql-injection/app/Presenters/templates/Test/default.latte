@@ -1,0 +1,21 @@
+{block content}
+
+{foreach $data as $d}
+    {$d->id}:  {$d->name} - {$d->amount} ks -{$d->price} kc
+    <br>
+{/foreach}
+
+<br>
+<a n:href="Test:default">test presenter</a>
+<br>
+<a href="http://localhost/test/?order=DESC&by=amount">serazeni podle mnozstvi</a>
+<br>
+<a href="http://localhost/test/?order=DESC&by=price">serazeni podle ceny</a>
+<br>
+<a href="http://localhost/test/?order=DESC%20LIMIT%201&by=price">sqlinjestion - limit</a>
+<br>
+
+<a href="http://localhost/test/?order=DESC ; update entita set price=0 where id=1&by=price">sqlinjestion - update - bad</a>
+<br>
+
+<a href="http://localhost/test/?order=DESC ; UPDATE entita SET price=0 WHERE id=1&by=price">sqlinjestion - update - ok </a>
