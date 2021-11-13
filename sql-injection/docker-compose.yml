@@ -1,0 +1,56 @@
+version: '3.6'
+
+services:
+
+  web:
+    image: josefjebavy/debian-apache-php8.0-nette
+    environment:
+     - NETTE_DEBUG=1
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./docker/development/web/msmtprc:/etc/msmtprc
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - sqlinjection-network       
+
+  database:
+    image: mariadb:10.3.18
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass
+      - MYSQL_DATABASE=sqlinjection
+      - MYSQL_INITDB_SKIP_TZINFO=1 # toto vyresi prni pomaly start
+      - TZ=Europe/Prague
+    volumes:
+      - ./docker/development/database:/docker-entrypoint-initdb.d/
+    networks:
+      - sqlinjection-network
+
+
+
+  phpmyadmin:
+    depends_on:
+      - database
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - '3380:80'
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: passpass
+    networks:
+      - sqlinjection-network
+
+  composer:
+          image: composer:latest
+          volumes:
+                - .:/app
+          working_dir: /app
+          command: composer install --ignore-platform-reqs
+   
+networks:
+  sqlinjection-network:
+    driver: bridge
+
+
